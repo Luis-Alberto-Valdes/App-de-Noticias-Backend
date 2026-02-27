@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify your account</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            color: #333333;
+            text-align: center;
+            margin: auto;
+        }
+        p {
+            color: #666666;
+            font-size: 16px;
+            line-height: 1.5;
+            text-align: center;
+            margin: auto;
+        }
+        .button {
+            display: block;
+            width: 120px;
+            padding: 6px 12px;
+            background-color: #28a745;
+            color: #ffffff !important;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: auto;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+       <h1>MORNINGDIGEST</h1>
+       <p>Thank you for registering in our news app, to verify your account click the link below.
+        In case you did not register in our app, please ignore this email.
+       </p>
+       <a href="http://localhost:3000/noticias/verify?token=<%= token %>" class="button">Verify Account</a>
+</body>
+</html>

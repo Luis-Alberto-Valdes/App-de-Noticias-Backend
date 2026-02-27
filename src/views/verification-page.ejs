@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify user</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #fff;
+        }
+        h1 {
+            text-align: center;
+        }
+        .success {
+            color: #28a745;
+        }
+        .error {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <% if (success) { %>
+        <h1 class="success">User verify correctly</h1>
+    <% } else { %>
+        <% if (message === 'Invalid Token') { %>
+            <h1 class="error">This verification code does not exist</h1>
+        <% } else if (message === 'Expired Token') { %>
+            <h1 class="error">This verification code has expired</h1>
+        <% }  %>
+    <% } %>
+</body>
+</html>

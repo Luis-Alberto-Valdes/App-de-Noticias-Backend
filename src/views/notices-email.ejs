@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily News</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+        }
+        h1 {
+            color: #333333;
+            text-align: center;
+            margin: auto;
+            font-size: 24px;
+        }
+        p {
+            display: block;
+            color: #666666;
+            font-size: 16px;
+            line-height: 1.5;
+            text-align: center;
+            margin: auto;
+        }
+        .news-item {
+            width: 100%;
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #dddddd;
+            border-radius: 8px;
+            background-color: #fafafa;
+        }
+        .news-image {
+            display: block;
+            margin: auto;
+            width: 95%;
+            max-height: 500px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .news-title {
+            display: block;
+            margin: auto;
+            color: #333333;
+            text-align: left;
+            margin: 10px 0;
+            font-size: 20px;
+        }
+        .news-description {
+            display: block;
+            margin: auto;
+            color: #666666;
+            font-size: 14px;
+            line-height: 1.5;
+            text-align: left;
+            margin: 10px 0;
+        }
+        .news-link {
+            display: block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #ffffff !important;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .news-link:hover {
+            background-color: #0056b3;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #dddddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📰 MORNINGDIGEST - Your Daily News</h1>
+        
+        <% notice.map((item) => { %>
+            <div class="news-item">
+                <% if (item.image_url) { %>
+                    <img src="<%= item.image_url %>" alt="News Image" class="news-image">
+                <% } %>
+                
+                <h1 class="news-title"><%= item.title %></h1>
+                
+                <p class="news-description"><%= item.description %></p>
+                
+                <a href="<%= item.link %>" class="news-link" target="_blank">Read More</a>
+            </div>
+        <% }) %>
+       
+        <a class="news-link" href="https://morningdigest.netlify.app/unsuscribe">Unsuscribe</a>
+        <div class="footer">
+            <p>You received this email because you subscribed to MorningDigest.</p>
+        </div>
+    </div>
+</body>
+</html>
