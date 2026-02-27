@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import mysql2 from 'mysql2/promise'
+import pg from 'pg'
 import { ERROR_CODES, ERROR_MESSAGES, HTTP_STATUS } from '../utils/errors.js'
 import { sendEmail, sendMultipleEmail } from '../utils/emails.js'
 import bcrypt from 'bcrypt'
@@ -10,16 +10,13 @@ const API_KEY = process.env.KEY
 const SECRET_KEY = process.env.SECRET_KEY
 
 const config = {
-  host: process.env.HOST,
-  port: process.env.PORT,
-  user: process.env.USER,
-  password: process.env.PASSWORD,
-  database: process.env.DB_NAME,
-  connectionLimit: 10,
-  queueLimit: 0
+  connectionString: process.env.DATABASE_URL,
+  max: 20,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
 }
 
-const pool = mysql2.createPool(config)
+const pool = new pg.Pool(config)
 
 async function getNoticesFromApi (user) {
   const categories = user.length === 1 ? user[0] : user.join(',')
@@ -37,9 +34,10 @@ export class NoticesModel {
   static async getUsersData () {
     let connection
     try {
-      connection = await pool.getConnection()
+      connection = await pool.connect()
+      await connection.query('BEGIN')
       const [result] = await connection.query(`
-      select user_email,JSON_ARRAYAGG(categories_name) as categories 
+      select user_email,json_agg(categories_name) as categories 
       from users 
       join 
       categories on categories.user_id = users.user_id 
@@ -48,8 +46,10 @@ export class NoticesModel {
       user_email`)
 
       const usersData = result
+      await connection.query('COMMIT')
       return { success: true, usersData, statusCode: HTTP_STATUS.OK }
     } catch (error) {
+      await connection.query('ROLLBACK')
       return { success: false, message: ERROR_MESSAGES.INTERNAL_ERROR, code: ERROR_CODES.DATABASE_ERROR }
     } finally {
       connection.release()
@@ -87,14 +87,14 @@ export class NoticesModel {
       const user_password = await bcrypt.hash(input.data.password, process.env.SALT_ROUNDS)
       const categories_name = input.data.categories
       const token = jwt.sign({ email: user_email }, SECRET_KEY, { expiresIn: '1h' })
-      connection = await pool.getConnection()
-      await connection.beginTransaction()
-      const [result] = await connection.execute('insert into users (user_email,user_password,verification_token) value(?,?,?)', [user_email, user_password, token])
+      connection = await pool.connect()
+      await connection.query('BEGIN')
+      const [result] = await connection.query('insert into users (user_email,user_password,verification_token) values($1,$2,$3)', [user_email, user_password, token])
 
       const user_id = result.insertId
 
       const categoriesPromises = await categories_name.map(categorie => {
-        return connection.execute('insert into categories (categories_name,user_id) value(?,?)', [categorie, user_id])
+        return connection.query('insert into categories (categories_name,user_id) values($1,$2)', [categorie, user_id])
       })
 
       await Promise.all(categoriesPromises)
@@ -107,7 +107,7 @@ export class NoticesModel {
       }
       await sendEmail(mailOptions)
 
-      await connection.commit()
+      await connection.query('COMMIT')
 
       return { success: true, message: { message: 'User registered successfully check your email for verification code!' }, statusCode: HTTP_STATUS.CREATED }
     } catch (error) {
@@ -116,9 +116,9 @@ export class NoticesModel {
           success: false, message: ERROR_MESSAGES.INTERNAL_ERROR, statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR
         }
       }
-      await connection.rollback()
+      await connection.query('ROLLBACK')
 
-      if (error.code === 'ER_DUP_ENTRY') {
+      if (error.code === '23505') {
         return {
           success: false, message: ERROR_MESSAGES.USER_EXISTS, statusCode: HTTP_STATUS.BAD_REQUEST
         }
@@ -133,27 +133,27 @@ export class NoticesModel {
     const user_email = input.data.email
     let connection
     try {
-      connection = await pool.getConnection()
-      await connection.beginTransaction()
-      const [password] = await connection.query('select user_password from users where user_email = ?', [user_email])
+      connection = await pool.connect()
+      await connection.query('BEGIN')
+      const [password] = await connection.query('select user_password from users where user_email = $1', [user_email])
       if (password.length === 0) throw new Error(ERROR_MESSAGES.INVALID_PASSWORD)
       const user_password = bcrypt.compareSync(input.data.password, password[0].user_password)
       if (!user_password === 0) throw new Error(ERROR_MESSAGES.INVALID_PASSWORD)
-      const [categoriesResult] = await connection.execute(`
+      const [categoriesResult] = await connection.query(`
         DELETE FROM categories 
         WHERE user_id IN (
         SELECT user_id FROM users 
-        WHERE user_email = ? );
+        WHERE user_email = $1 );
         `
       , [user_email])
 
-      const [usersResult] = await connection.execute(`
+      const [usersResult] = await connection.query(`
         DELETE FROM users 
-        WHERE user_email = ?;
+        WHERE user_email = $1;
         `
       , [user_email])
 
-      await connection.commit()
+      await connection.query('COMMIT')
 
       const afectedRows = usersResult.affectedRows + categoriesResult.affectedRows
       if (afectedRows === 0) {
@@ -163,7 +163,7 @@ export class NoticesModel {
       }
     } catch (error) {
       if (connection === undefined) return { success: false, message: ERROR_MESSAGES.INTERNAL_ERROR, statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR }
-      await connection.rollback()
+      await connection.query('ROLLBACK')
       if (error === ERROR_MESSAGES.USER_NOT_FOUND) return { success: false, message: ERROR_MESSAGES.USER_NOT_FOUND, statusCode: HTTP_STATUS.BAD_REQUEST }
       return { success: false, message: error.message, statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR }
     } finally {
@@ -177,16 +177,16 @@ export class NoticesModel {
     try {
       const verifyToken = jwt.verify(token, SECRET_KEY)
       console.log(verifyToken)
-      connection = await pool.getConnection()
-      await connection.beginTransaction()
+      connection = await pool.connect()
+      await connection.query('BEGIN')
 
-      const [result] = await connection.execute('select user_email,verification_token from users where user_email=? and verification_token=?', [verifyToken.email, token])
+      const [result] = await connection.query('select user_email,verification_token from users where user_email=$1 and verification_token=$2', [verifyToken.email, token])
       if (result.length === 0) {
         throw new Error(ERROR_MESSAGES.INVALID_TOKEN)
       }
-      await connection.execute('update users set verification = true,verification_token = "used"  where user_email = ?', [verifyToken.email])
+      await connection.query(`update users set verification = true,verification_token = 'used'  where user_email = $1`, [verifyToken.email])
 
-      await connection.commit()
+      await connection.query('COMMIT')
 
       return { success: true, message: { message: 'User verified correctly' }, statusCode: HTTP_STATUS.OK }
     } catch (error) {
