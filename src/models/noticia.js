@@ -110,7 +110,7 @@ export class NoticesModel {
       await Promise.all(categoriesPromises)
 
       const mailOptions = {
-        from: 'morningdigest.news@gmail.com',
+        from: process.env.EMAIL_USER,
         to: user_email,
         subject: 'Verify your account',
         html: await ejs.renderFile('src/views/verification-email.ejs', { token })
