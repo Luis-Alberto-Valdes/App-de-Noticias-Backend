@@ -14,15 +14,6 @@ app.use(cors({
   methods: ['POST', 'DELETE', 'GET']
 }))
 
-// Rate limiter: 10 peticiones cada 10 minutos
-const limiter = rateLimit({
-  windowMs: 10 * 60 * 1000, // 10 minutos en milisegundos
-  max: 10, // máximo 10 peticiones
-  message: 'Too many requests from this IP, please try again later.'
-})
-
-app.use(limiter)
-
 const PORT = process.env.PORT
 
 app.use('/noticias', noticesRouter)

@@ -179,6 +179,39 @@ export class NoticesModel {
     }
   }
 
+  static async deleteNotVerifyUsers () {
+    let client
+    try {
+      client = await pool.connect()
+      await client.query('BEGIN')
+
+      // First delete categories associated with unverified users
+      await client.query(`
+        DELETE FROM categories 
+        WHERE user_id IN (
+          SELECT user_id FROM users 
+          WHERE verification != true OR verification IS NULL OR verification = false
+        )
+      `)
+
+      // Then delete users without verification
+      const result = await client.query(`
+        DELETE FROM users 
+        WHERE verification != true OR verification IS NULL OR verification = false
+      `)
+
+      await client.query('COMMIT')
+
+      const affectedRows = result.rowCount
+      return { success: true, message: { message: `${affectedRows} unverified users deleted` }, statusCode: HTTP_STATUS.DELETED }
+    } catch (error) {
+      if (client) await client.query('ROLLBACK')
+      return { success: false, message: ERROR_MESSAGES.INTERNAL_ERROR, statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR }
+    } finally {
+      if (client) client.release()
+    }
+  }
+
   static async verifyUser (token) {
     let client
 
