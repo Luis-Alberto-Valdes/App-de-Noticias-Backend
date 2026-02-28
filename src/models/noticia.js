@@ -50,6 +50,7 @@ export class NoticesModel {
       return { success: true, usersData, statusCode: HTTP_STATUS.OK }
     } catch (error) {
       if (client) await client.query('ROLLBACK')
+      console.error(error)
       return { success: false, message: ERROR_MESSAGES.INTERNAL_ERROR, code: ERROR_CODES.DATABASE_ERROR }
     } finally {
       if (client) client.release()
@@ -76,6 +77,7 @@ export class NoticesModel {
     try {
       await sendMultipleEmail(input.notices)
     } catch (error) {
+      console.error(error)
       return error.message
     }
   }
@@ -84,7 +86,7 @@ export class NoticesModel {
     let client
     try {
       const user_email = input.data.email
-      const user_password = await bcrypt.hash(input.data.password, process.env.SALT_ROUNDS)
+      const user_password = await bcrypt.hash(input.data.password, parseInt(process.env.SALT_ROUNDS))
       const categories_name = input.data.categories
       const token = jwt.sign({ email: user_email }, SECRET_KEY, { expiresIn: '1h' })
 
@@ -172,6 +174,7 @@ export class NoticesModel {
       }
     } catch (error) {
       if (client) await client.query('ROLLBACK')
+      console.error(error)
       if (error.message === ERROR_MESSAGES.USER_NOT_FOUND) return { success: false, message: ERROR_MESSAGES.USER_NOT_FOUND, statusCode: HTTP_STATUS.BAD_REQUEST }
       return { success: false, message: error.message, statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR }
     } finally {
@@ -205,6 +208,7 @@ export class NoticesModel {
       const affectedRows = result.rowCount
       return { success: true, message: { message: `${affectedRows} unverified users deleted` }, statusCode: HTTP_STATUS.DELETED }
     } catch (error) {
+      console.error(error)
       if (client) await client.query('ROLLBACK')
       return { success: false, message: ERROR_MESSAGES.INTERNAL_ERROR, statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR }
     } finally {
@@ -240,6 +244,7 @@ export class NoticesModel {
       return { success: true, message: { message: 'User verified correctly' }, statusCode: HTTP_STATUS.OK }
     } catch (error) {
       if (client) await client.query('ROLLBACK')
+      console.error(error)
 
       if (error.name === 'TokenExpiredError') return { success: false, message: ERROR_MESSAGES.EXPIRED_TOKEN, statusCode: HTTP_STATUS.UNAUTHORIZED }
       if (error.name === 'JsonWebTokenError') return { success: false, message: ERROR_MESSAGES.INVALID_TOKEN, statusCode: HTTP_STATUS.UNAUTHORIZED }
