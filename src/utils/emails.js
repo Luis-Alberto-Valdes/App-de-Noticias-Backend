@@ -25,11 +25,8 @@ export async function sendEmail (mailOptions) {
         refreshToken: process.env.REFRESH_TOKEN,
         accessToken
       },
-      connectionConfig: {
-        dns: {
-          // Fuerza IPv4
-          family: 4
-        }
+      tls: {
+        rejectUnauthorized: false
       }
     })
 
@@ -53,14 +50,11 @@ export async function sendMultipleEmail (mailOptions) {
         refreshToken: process.env.REFRESH_TOKEN,
         accessToken
       },
+      tls: {
+        rejectUnauthorized: false
+      },
       maxConnections: 5,
       maxMessages: 100,
-      connectionConfig: {
-        dns: {
-          // Fuerza IPv4
-          family: 4
-        }
-      }
     })
 
     const emailPromises = mailOptions.map(async recipient => {
