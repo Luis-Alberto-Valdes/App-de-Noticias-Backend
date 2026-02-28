@@ -5,19 +5,15 @@ import { google } from 'googleapis'
 
 const oAuth2Client = new google.auth.OAuth2(
   process.env.CLIENT_ID,
-  process.env.CLIENT_SECRET,
-  console.log(process.env.CLIENT_ID, process.env.CLIENT_SECRET)
+  process.env.CLIENT_SECRET
 )
 
 oAuth2Client.setCredentials({
   refresh_token: process.env.REFRESH_TOKEN
-
 })
-console.log(oAuth2Client)
 export async function sendEmail (mailOptions) {
   try {
-    const accessToken = await oAuth2Client.getAccessToken()
-    console.log(accessToken)
+    const { token: accessToken } = await oAuth2Client.getAccessToken()
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -41,7 +37,7 @@ export async function sendEmail (mailOptions) {
 
 export async function sendMultipleEmail (mailOptions) {
   try {
-    const accessToken = await oAuth2Client.getAccessToken()
+    const { token: accessToken } = await oAuth2Client.getAccessToken()
 
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -52,9 +48,6 @@ export async function sendMultipleEmail (mailOptions) {
         clientSecret: process.env.CLIENT_SECRET,
         refreshToken: process.env.REFRESH_TOKEN,
         accessToken
-      },
-      tls: {
-        rejectUnauthorized: false
       },
       maxConnections: 5,
       maxMessages: 100,
