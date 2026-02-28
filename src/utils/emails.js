@@ -9,6 +9,7 @@ export async function sendEmail (mailOptions) {
     host: 'smtp.gmail.com',
     port: 587,
     secure: false,
+    ipv4: true,
     auth: {
       user: 'morningdigest.news@gmail.com',
       pass: KEY,
