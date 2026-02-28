@@ -10,7 +10,7 @@ export async function sendEmail (mailOptions) {
     console.log('Enviando email a:', mailOptions.to)
 
     const response = await resend.emails.send({
-      from: 'onboarding@resend.dev',
+      from: process.env.EMAIL_FROM,
       to: mailOptions.to,
       subject: mailOptions.subject,
       html: mailOptions.html
@@ -32,7 +32,7 @@ export async function sendMultipleEmail (mailOptions) {
       const html = await ejs.renderFile('./src/views/notices-email.ejs', { notice: recipient.value.notices })
 
       return resend.emails.send({
-        from: 'onboarding@resend.dev',
+        from: process.env.EMAIL_FROM,
         to: recipient.value.emails,
         subject: 'Notices of the day',
         html
