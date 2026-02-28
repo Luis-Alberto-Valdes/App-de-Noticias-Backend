@@ -3,7 +3,7 @@ import ejs from 'ejs'
 
 // Inicializar cliente de Resend con API key desde variables de entorno
 const resend = new Resend(process.env.RESEND_API_KEY)
-
+console.log('Resend client initialized', resend)
 export async function sendEmail (mailOptions) {
   try {
     console.log('Preparando envío de correo individual vía Resend...')
@@ -16,7 +16,7 @@ export async function sendEmail (mailOptions) {
       html: mailOptions.html
     })
 
-    console.log('Email enviado exitosamente. ID:', response.id)
+    console.log('Email enviado exitosamente. ID:', response)
   } catch (error) {
     console.error('Error sending email via Resend:', error.message)
     console.error('Error details:', error)
