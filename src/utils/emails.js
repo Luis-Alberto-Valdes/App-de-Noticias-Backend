@@ -5,16 +5,19 @@ import { google } from 'googleapis'
 
 const oAuth2Client = new google.auth.OAuth2(
   process.env.CLIENT_ID,
-  process.env.CLIENT_SECRET
+  process.env.CLIENT_SECRET,
+  console.log(process.env.CLIENT_ID, process.env.CLIENT_SECRET)
 )
 
 oAuth2Client.setCredentials({
   refresh_token: process.env.REFRESH_TOKEN
+
 })
+console.log(oAuth2Client)
 export async function sendEmail (mailOptions) {
   try {
     const accessToken = await oAuth2Client.getAccessToken()
-
+    console.log(accessToken)
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
