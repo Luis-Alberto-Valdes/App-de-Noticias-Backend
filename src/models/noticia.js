@@ -120,7 +120,7 @@ export class NoticesModel {
       return { success: true, message: { message: 'User registered successfully check your email for verification code!' }, statusCode: HTTP_STATUS.CREATED }
     } catch (error) {
       if (client) await client.query('ROLLBACK')
-
+      console.error(error)
       if (error.code === '23505') {
         return {
           success: false, message: ERROR_MESSAGES.USER_EXISTS, statusCode: HTTP_STATUS.BAD_REQUEST
