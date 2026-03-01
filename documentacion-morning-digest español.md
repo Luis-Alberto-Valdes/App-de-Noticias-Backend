@@ -388,8 +388,8 @@ const registerSchema = z.object({
 
 ### Esquema de Cancelación (Zod)
 
-```
-javascript
+```javascript
+
 const unregisterSchema = z.object({
   email: z.email({
     error: 'Invalid email'
@@ -649,8 +649,8 @@ CREATE TABLE categories (
 
 ## 🔗 Enlaces
 
-- **Frontend (Producción)**: [Morning Digest](https://www.netlify.com/)
-- **Backend (Producción)**: [App de Noticias Backend](https://render.com/)
+- **Frontend (Producción)**: [Netlify](https://www.netlify.com/)
+- **Backend (Producción)**: [Render](https://render.com/)
 - **API de Noticias**: [NewsData.io](https://newsdata.io/)
 - **Servicio de Email**: [Resend](https://resend.com/)
 

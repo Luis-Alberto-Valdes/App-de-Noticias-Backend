@@ -372,8 +372,8 @@ Renders verification page with success message.
 
 ### Registration Schema (Zod)
 
-```
-javascript
+```javascript
+
 const registerSchema = z.object({
   email: z.email({
     error: 'Invalid email'
@@ -390,8 +390,8 @@ const registerSchema = z.object({
 
 ### Unregistration Schema (Zod)
 
-```
-javascript
+```javascript
+
 const unregisterSchema = z.object({
   email: z.email({
     error: 'Invalid email'
@@ -652,8 +652,8 @@ CREATE TABLE categories (
 
 ## 🔗 Links
 
-- **Frontend (Production)**: [Morning Digest](https://www.netlify.com/)
-- **Backend (Production)**: [App de Noticias Backend](https://render.com/)
+- **Frontend (Production)**: [Netlify](https://www.netlify.com/)
+- **Backend (Production)**: [Render](https://render.com/)
 - **News API**: [NewsData.io](https://newsdata.io/)
 - **Email Service**: [Resend](https://resend.com/)
 
