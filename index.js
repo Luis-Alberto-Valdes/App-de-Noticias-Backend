@@ -1,5 +1,4 @@
 import express, { json } from 'express'
-import rateLimit from 'express-rate-limit'
 import { noticesRouter } from './src/routes/noticias.js'
 import cors from 'cors'
 
