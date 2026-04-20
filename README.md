@@ -50,6 +50,10 @@ Morning Digest is a full-stack news application designed to deliver personalized
 - Users can register and log in to manage their news subscriptions.
 - The application sends personalized news digests via email based on user preferences.
 
-## Check documentation for more info
+## Documentation
+
+- [Documentacion en Español](documentacion-morning-digest%20español.md)
+- [Documentation in English](documentation-morning-digest%20english.md)
+
 
 
