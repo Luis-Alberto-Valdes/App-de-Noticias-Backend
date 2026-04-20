@@ -165,11 +165,14 @@ App de Noticias Backend/
 ├── package.json
 ├── src/
 │   ├── controllers/
-│   │   └── noticias.js         # Controladores de noticias
+│   │   ├── user.js             # Controladores de usuario
+│   │   └── notices.js         # Controladores de noticias
 │   ├── models/
-│   │   └── noticia.js          # Modelos y lógica de BD
+│   │   ├── user.js             # Modelo de usuario y lógica de BD
+│   │   └── notices.js          # Modelo de noticias y lógica de BD
 │   ├── routes/
-│   │   └── noticias.js        # Definición de rutas
+│   │   ├── user.js             # Rutas de usuario
+│   │   └── notices.js         # Rutas de noticias
 │   ├── schemas/
 │   │   └── loginValidation.js  # Esquemas de validación Zod
 │   ├── utils/
@@ -274,7 +277,7 @@ GET https://newsdata.io/api/1/latest
 https://app-de-noticias-backend.onrender.com/noticias
 ```
 
-### 1. GET `/noticias`
+### 1. GET `/notices`
 
 Obtiene las noticias de los usuarios verificados y las envía por correo.
 
@@ -288,7 +291,7 @@ json
 }
 ```
 
-### 2. POST `/noticias`
+### 2. POST `/user`
 
 Registra un nuevo usuario.
 
@@ -322,7 +325,7 @@ json
 - 400: Email inválido, contraseña muy corta/larga, categorías inválidas
 - 409: Usuario ya existe
 
-### 3. DELETE `/noticias`
+### 3. DELETE `/user`
 
 Cancela la suscripción de un usuario.
 
@@ -348,7 +351,7 @@ json
 **Posibles Errores:**
 - 400: Usuario no encontrado, contraseña incorrecta
 
-### 4. GET `/noticias/verify`
+### 4. GET `/user/verify`
 
 Verifica la cuenta del usuario mediante token.
 
@@ -447,7 +450,7 @@ SALT_ROUNDS=10
    - Confirma contraseña
    - Selecciona 1-5 categorías
         ↓
-4. Envía formulario (POST /noticias)
+4. Envía formulario (POST /user)
         ↓
 5. Backend:
    - Valida datos con Zod
@@ -477,7 +480,7 @@ SALT_ROUNDS=10
         ↓
 3. Ingresa email y contraseña
         ↓
-4. Envía formulario (DELETE /noticias)
+4. Envía formulario (DELETE /user)
         ↓
 5. Backend:
    - Valida credenciales
@@ -492,7 +495,7 @@ SALT_ROUNDS=10
 ```
 1. Sistema ejecutable (cron job externo)
         ↓
-2. GET /noticias
+2. GET /notices
         ↓
 3. Backend:
    - Consulta usuarios verificados

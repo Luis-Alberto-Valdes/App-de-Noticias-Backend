@@ -166,11 +166,14 @@ App de Noticias Backend/
 ├── package.json
 ├── src/
 │   ├── controllers/
-│   │   └── noticias.js         # News controllers
+|   |   |__ user.js             # User controllers
+│   │   └── notices.js          # News controllers
 │   ├── models/
-│   │   └── noticia.js          # Models and DB logic
+|   |   |__ user.js             # User model and DB logic
+│   │   └── notices.js          # News model and DB logic
 │   ├── routes/
-│   │   └── noticias.js         # Route definitions
+|   |   |__ user.js             # User Router
+│   │   └── notices.js          # Notces Router
 │   ├── schemas/
 │   │   └── loginValidation.js  # Zod validation schemas
 │   ├── utils/
@@ -275,7 +278,7 @@ GET https://newsdata.io/api/1/latest
 https://app-de-noticias-backend.onrender.com/noticias
 ```
 
-### 1. GET `/noticias`
+### 1. GET `/user`
 
 Gets the news of verified users and sends them via email.
 
@@ -289,7 +292,7 @@ json
 }
 ```
 
-### 2. POST `/noticias`
+### 2. POST `/user`
 
 Registers a new user.
 
@@ -323,7 +326,7 @@ json
 - 400: Invalid email, password too short/long, invalid categories
 - 409: User already exists
 
-### 3. DELETE `/noticias`
+### 3. DELETE `/user`
 
 Unsubscribes a user.
 
@@ -349,7 +352,7 @@ json
 **Possible Errors:**
 - 400: User not found, incorrect password
 
-### 4. GET `/noticias/verify`
+### 4. GET `/user/verify`
 
 Verifies the user account via token.
 
@@ -449,7 +452,7 @@ SALT_ROUNDS=10
    - Confirms password
    - Selects 1-5 categories
         ↓
-4. Submits form (POST /noticias)
+4. Submits form (POST /user)
         ↓
 5. Backend:
    - Validates data with Zod
@@ -479,7 +482,7 @@ SALT_ROUNDS=10
         ↓
 3. Enters email and password
         ↓
-4. Submits form (DELETE /noticias)
+4. Submits form (DELETE /user)
         ↓
 5. Backend:
    - Validates credentials
@@ -494,7 +497,7 @@ SALT_ROUNDS=10
 ```
 1. Executable system (external cron job)
         ↓
-2. GET /noticias
+2. GET /notices
         ↓
 3. Backend:
    - Queries verified users
