@@ -1,5 +1,5 @@
 import express, { json } from 'express'
-import { noticesRouter } from './src/routes/noticias.js'
+import { noticesRouter } from './src/routes/notices.js'
 import cors from 'cors'
 import { usersRouter } from './src/routes/user.js'
 
