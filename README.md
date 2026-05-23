@@ -1,3 +1,5 @@
+![Animation](public/Animation.gif)
+
 # Morning Digest
 
 ## Description
